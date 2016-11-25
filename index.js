@@ -1,15 +1,15 @@
 // libraries
 var express = require('express');
-
+var http = require('http');
 
 
 // Server setup
 var app = express();
 
 var address = 'localhost';
-var port = 12345;
-app.set('port',(process.env.PORT || port));
-app.listen((process.env.PORT || port), address);
+var port = process.env.PORT || 12345;
+app.set('port',port);
+app.listen(port, address);
 
 // root/default path
 app.use('/',function(request,response){
