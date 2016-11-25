@@ -9,7 +9,7 @@ var app = express();
 var address = 'localhost';
 var port = 12345;
 app.set('port',(process.env.PORT || port));
-app.listen(port, address);
+app.listen((process.env.PORT || port), address);
 
 // root/default path
 app.use('/',function(request,response){
