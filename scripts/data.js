@@ -9,8 +9,9 @@
  */
 var users = {
 	username : [],
+	password : [],
 	name : [],
-	surname : [],
+	surname : []
 };
 
 /* set of names of the tests
@@ -72,12 +73,13 @@ function getUserId(username){
  * @param      {string}   surname   The surname of the new user
  * @return     {boolean}  true if the user has been inserted,false otherwise
  */
-var insertUser = function(username,name,surname) {
+var insertUser = function(username,password,name,surname) {
 	if(!userIsPresent(username)){
 		var id = getNewUserId();
 		users.username[id] = username;
 		users.name[id] = name;
 		users.surname[id] = surname;
+		users.password[id] = password;
 		return true;
 	}
 	else{
@@ -97,6 +99,7 @@ var deleteUser = function(username){
 		users.username.splice(id,1);
 		users.name.splice(id,1);
 		users.surname.splice(id,1);
+		users.password.splice(id,1);
 		return true;
 	}
 	else{
@@ -122,6 +125,22 @@ var updateUser = function(username,name,surname){
 	else{
 		return false;
 	}	
+}
+
+/**
+ * Checks if the couple username-password is right in order to login
+ *
+ * @param      {string}   username  The username
+ * @param      {string}   password  The password
+ * @return     {boolean}  true if the user authentication is valid, false otherwise
+ */
+var correctAuthentication = function(username,password){
+	if(userIsPresent(username)){
+		var id = getUserId(username);
+		return password == users.password[id];
+	}else{
+		return false;
+	}
 }
 
 /**
@@ -210,3 +229,10 @@ function isAValidDate(string){
 	var validPattern = /^\d\d\d\d-\d\d-\d\d$/;
 	return validPattern.test(string);
 }
+
+exports.insertUser = insertUser;
+exports.deleteUser = deleteUser;
+exports.updateUser = updateUser;
+exports.correctAuthentication = correctAuthentication;
+exports.insertTest = insertTest;
+exports.associateUserToTest = associateUserToTest;
