@@ -81,12 +81,10 @@ app.post('/registerUser',function(request,response){
 		var name = !request.body.name ? "" : request.body.name;
 		var surname = !request.body.surname ? "" : request.body.surname;
 
-		console.log(!!username && !!pwd && !!pwdcheck && pwd === pwdcheck);
 		if(!!username && !!pwd && !!pwdcheck && pwd === pwdcheck)
 		{
 			if(!data.insertUser(username,pwd,name,surname))
 			{
-				console.log('failed to insert');
 				response.redirect('/signup');
 			}
 			else
@@ -105,7 +103,6 @@ app.post('/registerUser',function(request,response){
 // root/default path
 app.get('/',function(request,response){
 	var authenticated = request.session.auth != null;
-	console.log(request.session.auth);
 	var username = authenticated ? data.getUser(request.session.auth).username : "";
 	bind.toFile('pages/index.tpl',
 		{
