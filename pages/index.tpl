@@ -5,6 +5,8 @@
 	<title>Enter YOUniversity</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="pages/css/index.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<script type="text/javascript" src="pages/js/home.js"></script>
 </head>
 <body>
 <div class="container-header">
@@ -52,6 +54,14 @@
 			if[auth] ~
 			[:then ~ 
 				<h2>Your tests</h2>
+				<button id="buttontoggle">Insert a new test</button>
+				<form id="insertTest" action="/insertTest" method="post">
+					Name: <input type="text" name="testname" required><br>
+					Universities [u1, u2, ...]: <input type="text" name="universities" required><br>
+					Date : <input type="date" name="date" required><br>
+					Score: <input type="number" name="score" required><br>
+					<input type="submit" value="Insert">
+				</form>
 			:]
 			[:else ~ <h3>Welcome! Register <a href="/signup">here</a> or <a href="/login">sign in</a>!</h3>:]
 	:)

@@ -30,3 +30,7 @@ justify-content: center;
 	font-weight: bold;
 	color: #4682B4;
 }
+
+#insertTest{
+	display: none;
+}

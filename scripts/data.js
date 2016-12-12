@@ -25,14 +25,6 @@ var tests = {
 	scores : [[[[]]]]	// [username,testname,date,location] = score
 };
 
-/* list of all the locations applicable to a test
- * 
- * Locations can be Universities (e.g. UniTN, UniVR, etc.) or areas (North Italy, precised cities etc: medicine tests
- * 								  are based on this kind of locations)
- */
-var locations = {
-	name : []
-};
 
 /**
  * Gets the new user identifier.
@@ -185,7 +177,7 @@ function testIsPresent(name){
  * @return     {boolean}  true if the name wasn't present -> been inserted, false otherwise
  */
 var insertTest = function(name){
-	if(testIsPresent(name)){
+	if(!testIsPresent(name)){
 		var id = getNewTestId();
 		tests.name[id] = name;
 		return true;

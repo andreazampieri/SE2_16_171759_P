@@ -25,6 +25,7 @@ app.listen(port,function(){
 
 app.use('/pages', express.static('pages'));
 app.use('/pages/css', express.static('/pages/css'));
+app.use('/pages/js', express.static('/pages/js'));
 
 app.get('/login',function(request,response) {
 	var authenticated = request.session.auth != null;
@@ -97,6 +98,26 @@ app.post('/registerUser',function(request,response){
 			response.redirect('/signup');
 		}
 
+	}
+});
+
+app.use('/insertTest',function(request,response){
+	if(!request.body)
+	{
+		response.redirect('/');
+	}
+	else
+	{
+		var username = request.session.auth;
+		var test = request.body.testname;
+		var date = request.body.date;
+		var score = request.body.score;
+		var universities = request.body.universities.split(",").map(s => s.trim);
+
+		data.insertTest(test);
+		for(var i=0; i< universities.length; i++){
+			data.associateUserToTest(username,test,date,universities[i],score);
+		}
 	}
 });
 
