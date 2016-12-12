@@ -2,13 +2,12 @@
 var express = require('express');
 var session = require('express-session');
 var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
 var path = require('path');
-var data = require('./data.js')
+var data = require('./data.js');
+var bind = require('bind');
 
 // Server setup
 var app = express();
-app.use(cookieParser());
 app.use(session({
   secret: 'sodium chloride',
   resave: true,
@@ -24,17 +23,20 @@ app.listen(port,function(){
 	data.insertUser("admin","admin","admin","admin");
 });
 
-app.use('/pages',express.static('pages'));
+app.use('/pages', express.static('pages'));
+app.use('/pages/css', express.static('/pages/css'));
 
 app.get('/login',function(request,response) {
-	if(request.session.auth == null)
-	{
-		response.sendFile(path.join(__dirname+'/../pages/login.html'));
-	}
-	else
-	{
-		response.sendFile(path.join(__dirname+'/../pages/alreadyAuth.html'));
-	}
+	var authenticated = request.session.auth != null;
+	bind.toFile('pages/login.tpl',
+		{
+			auth : authenticated
+		},
+		function(data)
+		{
+			response.writeHead(200,{'Content-Type':'text/html'});
+			response.end(data);
+		});
 });
 
 app.post('/authenticate',function(request,response){
@@ -43,20 +45,76 @@ app.post('/authenticate',function(request,response){
 	if(username != null && password != null 
 		&& data.correctAuthentication(username,password) && request.session.auth == null)
 	{
-		request.session.auth = "true";
+		request.session.auth = username;
 	}
 	response.redirect('/');
 });
 
+app.get('/logout',function(request,response){
+	request.session.destroy();
+	response.redirect('/');
+});
 
-// root/default path
-app.get('/',function(request,response){
-	if(request.session.auth != null)
+app.get('/signup',function(request,response){
+	var authenticated = request.session.auth != null;
+	bind.toFile('pages/registration.tpl',
+		{
+			auth : authenticated
+		},
+		function(data)
+		{
+			response.writeHead(200,{'Content-Type':'text/html'});
+			response.end(data);
+		});
+});
+
+app.post('/registerUser',function(request,response){
+	if(!request.body)
 	{
-		response.sendFile(path.join(__dirname+'/../pages/index.html'));
+		response.redirect('/');
 	}
 	else
 	{
-		response.redirect('/login');
+		var username = request.body.username;
+		var pwd = request.body.pwd;
+		var pwdcheck = request.body.pwdcheck;
+		var name = !request.body.name ? "" : request.body.name;
+		var surname = !request.body.surname ? "" : request.body.surname;
+
+		console.log(!!username && !!pwd && !!pwdcheck && pwd === pwdcheck);
+		if(!!username && !!pwd && !!pwdcheck && pwd === pwdcheck)
+		{
+			if(!data.insertUser(username,pwd,name,surname))
+			{
+				console.log('failed to insert');
+				response.redirect('/signup');
+			}
+			else
+			{
+				response.redirect('/login');
+			}
+		}
+		else
+		{
+			response.redirect('/signup');
+		}
+
 	}
+});
+
+// root/default path
+app.get('/',function(request,response){
+	var authenticated = request.session.auth != null;
+	console.log(request.session.auth);
+	var username = authenticated ? data.getUser(request.session.auth).username : "";
+	bind.toFile('pages/index.tpl',
+		{
+			auth : authenticated,
+			username : username
+		},
+		function(data)
+		{
+			response.writeHead(200,{'Content-Type':'text/html'});
+			response.end(data);
+		});
 });

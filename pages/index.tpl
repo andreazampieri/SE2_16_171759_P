@@ -4,49 +4,26 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Enter YOUniversity</title>
 	<meta charset="utf-8">
-	<style type="text/css">
-		.container-header {
-			display: inline;
-			flex-direction: row;
-			justify-content: space-between;
-			align-content: space-around;
-		}
-		.logo {
-			display: inline-block;
-		}
-		.menu {
-			display: flex;
-			align-content: flex-end;
-			justify-content: flex-end;
-		}
-		.menu-item{
-			align-self: flex-end;
-			margin: 0 50px;
-		}
-
-		#tests{
-			display: block;
-			margin-left: 15%;
-	    margin-right: 15%;
-	    width: 70%;
-	    align-content: center;
-	    justify-content: center;
-		}
-
-		.headers {
-			font-weight: bold;
-			color: #4682B4;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="pages/css/index.css">
 </head>
 <body>
 <div class="container-header">
 	<div class="logo">EnterYOUniversity</div>
 	<div class="menu">
+		<div class="menu-item">
+			<strong>(: username :)</strong>
+		</div>
 		<div class="menu-item">Analytics</div>
 		<div class="menu-item">Settings</div>
-		<div class="menu-item"><a href="/logout">Logout</a></div>
+		<div class="menu-item">
+		(:
+			if[auth] ~
+			[:then ~ <a href="/logout">Logout</a>:]
+			[:else ~ <a href="/login">Login</a>:]
+		:)
+		</div>
 	</div>
+	<!--
 	<table id="tests">
 		<tr class="headers">
 			<td>Test Name</td>
@@ -70,6 +47,14 @@
 			<td>Results available in 18 days</td>
 		</tr>
 	</table>
+	-->
+	(:
+			if[auth] ~
+			[:then ~ 
+				<h2>Your tests</h2>
+			:]
+			[:else ~ <h3>Welcome! Register <a href="/signup">here</a> or <a href="/login">sign in</a>!</h3>:]
+	:)
 </div>
 </body>
 </html>

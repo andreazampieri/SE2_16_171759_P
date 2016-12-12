@@ -18,12 +18,10 @@
   },
   "homepage": "https://github.com/andreazampieri/SE2_16_171759_P#readme",
   "dependencies": {
+    "bind": "^0.1.7",
     "body-parser": "^1.15.2",
-    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
-    "path": "^0.12.7",
-    "pg": "^6.1.0",
-    "util": "^0.10.3"
+    "path": "^0.12.7"
   }
 }

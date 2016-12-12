@@ -143,6 +143,22 @@ var correctAuthentication = function(username,password){
 	}
 }
 
+var getUser = function(username){
+	if(userIsPresent(username))
+	{
+		var id = getUserId(username);
+		return {
+			username : users.username[id],
+			name : users.name[id],
+			surname : users.surname[id]
+		};
+	}
+	else
+	{
+		return {};
+	}
+}
+
 /**
  * Gets the new test identifier.
  *
@@ -233,6 +249,7 @@ function isAValidDate(string){
 exports.insertUser = insertUser;
 exports.deleteUser = deleteUser;
 exports.updateUser = updateUser;
+exports.getUser = getUser;
 exports.correctAuthentication = correctAuthentication;
 exports.insertTest = insertTest;
 exports.associateUserToTest = associateUserToTest;
