@@ -99,7 +99,7 @@ app.post('/registerUser',function(request,response){
 			}
 			else
 			{
-				response.redirect(200,'/login');
+				response.redirect('/login');
 			}
 		}
 		else
