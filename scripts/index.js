@@ -16,6 +16,7 @@ app.use(session({
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
 var port = process.env.PORT || 5000;
 app.set('port',port);
 app.listen(port,function(){
@@ -25,6 +26,7 @@ app.listen(port,function(){
 
 app.use('/pages', express.static('pages'));
 app.use('/pages/css', express.static('/pages/css'));
+app.use('/pages/js', express.static('/pages/js'));
 
 app.get('/login',function(request,response) {
 	var authenticated = request.session.auth != null;
@@ -34,7 +36,8 @@ app.get('/login',function(request,response) {
 		},
 		function(data)
 		{
-			response.writeHead(200,{'Content-Type':'text/html'});
+			var statusCode = authenticated ? 307 : 200; //307 redirected because already logged in
+			response.writeHead(statusCode,{'Content-Type':'text/html'});
 			response.end(data);
 		});
 });
@@ -46,8 +49,13 @@ app.post('/authenticate',function(request,response){
 		&& data.correctAuthentication(username,password) && request.session.auth == null)
 	{
 		request.session.auth = username;
+		response.redirect('/');
 	}
-	response.redirect('/');
+	else
+	{
+		response.status = 403;
+		response.sendFile(path.join(__dirname+'/../pages/forbidden.html'));
+	}
 });
 
 app.get('/logout',function(request,response){
@@ -63,7 +71,8 @@ app.get('/signup',function(request,response){
 		},
 		function(data)
 		{
-			response.writeHead(200,{'Content-Type':'text/html'});
+			var statusCode = authenticated ? 307 : 200; 				//307 redirected because already logged in
+			response.writeHead(statusCode,{'Content-Type':'text/html'});
 			response.end(data);
 		});
 });
@@ -71,7 +80,8 @@ app.get('/signup',function(request,response){
 app.post('/registerUser',function(request,response){
 	if(!request.body)
 	{
-		response.redirect('/');
+		response.status=400;
+		response.sendFile(path.join(__dirname+'/../pages/badrequest.html'));
 	}
 	else
 	{
@@ -85,18 +95,72 @@ app.post('/registerUser',function(request,response){
 		{
 			if(!data.insertUser(username,pwd,name,surname))
 			{
-				response.redirect('/signup');
+				response.redirect(400,'/signup');
 			}
 			else
 			{
-				response.redirect('/login');
+				response.redirect(200,'/login');
 			}
 		}
 		else
 		{
-			response.redirect('/signup');
+			response.redirect(400,'/signup');
 		}
 
+	}
+});
+
+app.post('/insertTest',function(request,response){
+	if(request.session.auth == null)
+	{
+		response.redirect(401,'/login');
+	}
+	else if(!request.body)
+	{
+		response.status =400;
+		response.sendFile(path.join(__dirname+'/../pages/badrequest.html'));
+	}
+	else
+	{
+		var username = request.session.auth;
+		var test = request.body.testname;
+		var date = request.body.date;
+		var score = request.body.score;
+		var universities = request.body.universities.split(",").map(s => s.trim());
+
+		data.insertTest(test);
+
+		for(var i=0; i< universities.length; i++){
+			data.associateUserToTest(username,test,date,universities[i],score);
+		}
+		response.redirect(200,'/');
+	}
+});
+
+app.post('/tests/getUserTests',function(request,response){
+	if(!!request.session.auth)
+	{
+		var headers = {};
+		headers["Access-Control-Allow-Origin"] = "*"; //for cross enviroment request
+		headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";//methods allowed to response
+		headers["Access-Control-Allow-Credentials"] = false;
+		headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept"; //type of headers
+		headers["Content-Type"] = "application/json";//format response
+
+		var tests = data.getUserTests(request.session.auth);
+		var json = {tests:[]};
+		for(var i=0;i<tests.length;i++)
+		{
+			json.tests.push(data.testToJSON(tests[i]));
+		}
+
+		response.writeHead(200, headers);
+		response.end(JSON.stringify(json));
+	}
+	else
+	{
+		response.writeHead(401,{});
+		response.end(JSON.stringify({}));
 	}
 });
 

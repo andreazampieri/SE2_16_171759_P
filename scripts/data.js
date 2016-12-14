@@ -22,17 +22,9 @@ var users = {
  */
 var tests = {
 	name : [],
-	scores : [[[[]]]]	// [username,testname,date,location] = score
+	scores : [] 	// array of tuples of the format [username,testname,date,location,score]
 };
 
-/* list of all the locations applicable to a test
- * 
- * Locations can be Universities (e.g. UniTN, UniVR, etc.) or areas (North Italy, precised cities etc: medicine tests
- * 								  are based on this kind of locations)
- */
-var locations = {
-	name : []
-};
 
 /**
  * Gets the new user identifier.
@@ -41,6 +33,10 @@ var locations = {
  */
 function getNewUserId(){
 	return users.username.length;		//if the users-data is empty -> new id = 0; otherwise the new unused id is the length 
+}
+
+function isInt(x){
+	return !isNaN(parseInt(x));
 }
 
 /**
@@ -185,7 +181,7 @@ function testIsPresent(name){
  * @return     {boolean}  true if the name wasn't present -> been inserted, false otherwise
  */
 var insertTest = function(name){
-	if(testIsPresent(name)){
+	if(!testIsPresent(name)){
 		var id = getNewTestId();
 		tests.name[id] = name;
 		return true;
@@ -226,11 +222,13 @@ function locationIsPresent(location){
  * @return     {boolean}  true if the operation succeeded, false otherwise
  */
 var associateUserToTest = function(username,testname,date,location,score){
-	if(userIsPresent(username) && testIsPresent(testname) && isInt(score) && isAValidDate(date) && locationIsPresent(location)){
-		tests.scores[username][testname][date][location] = parseInt(score);
+	if(userIsPresent(username) && testIsPresent(testname) && isInt(score) && isAValidDate(date))
+	{
+		tests.scores.push([username,testname,date,location,parseInt(score)]);
 		return true;
 	}
-	else{
+	else
+	{
 		return false;
 	}
 }
@@ -246,6 +244,31 @@ function isAValidDate(string){
 	return validPattern.test(string);
 }
 
+var getUserTests = function(username){	
+	if(userIsPresent(username))
+	{
+		var result = [];
+		for(var i=0;i<tests.scores.length;i++)
+		{
+			if(tests.scores[i][0] == username)		// the first element is the username
+			{
+				result.push(tests.scores[i]);
+			}
+		}
+		return result;
+	}
+	else
+	{
+		return [];
+	}
+}
+
+
+var testToJSON = function(test){
+	//[username,testname,date,location,score]
+	return {"username":test[0],"testname":test[1],"date":test[2],"location":test[3],"score":test[4]};
+}
+
 exports.insertUser = insertUser;
 exports.deleteUser = deleteUser;
 exports.updateUser = updateUser;
@@ -253,3 +276,5 @@ exports.getUser = getUser;
 exports.correctAuthentication = correctAuthentication;
 exports.insertTest = insertTest;
 exports.associateUserToTest = associateUserToTest;
+exports.getUserTests = getUserTests;
+exports.testToJSON = testToJSON;

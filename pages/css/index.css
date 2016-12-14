@@ -26,7 +26,11 @@ align-content: center;
 justify-content: center;
 }
 
-.headers {
+th {
 	font-weight: bold;
 	color: #4682B4;
+}
+
+#insertTest{
+	display: none;
 }
