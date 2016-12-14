@@ -16,6 +16,7 @@ app.use(session({
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
 var port = process.env.PORT || 5000;
 app.set('port',port);
 app.listen(port,function(){
@@ -52,8 +53,8 @@ app.post('/authenticate',function(request,response){
 	}
 	else
 	{
-		response.writeHead(401,{'Content-Type':'text/html'});
-		response.sendFile(path.join(__dirname+'/../pages/unauthorized.html'));
+		response.status = 403;
+		response.sendFile(path.join(__dirname+'/../pages/forbidden.html'));
 	}
 });
 
@@ -79,7 +80,7 @@ app.get('/signup',function(request,response){
 app.post('/registerUser',function(request,response){
 	if(!request.body)
 	{
-		response.writeHead(400,{'Content-Type':'text/html'});
+		response.status=400;
 		response.sendFile(path.join(__dirname+'/../pages/badrequest.html'));
 	}
 	else
@@ -94,25 +95,29 @@ app.post('/registerUser',function(request,response){
 		{
 			if(!data.insertUser(username,pwd,name,surname))
 			{
-				response.redirect('/signup');
+				response.redirect(400,'/signup');
 			}
 			else
 			{
-				response.redirect('/login');
+				response.redirect(200,'/login');
 			}
 		}
 		else
 		{
-			response.redirect('/signup');
+			response.redirect(400,'/signup');
 		}
 
 	}
 });
 
-app.use('/insertTest',function(request,response){
-	if(!request.body)
+app.post('/insertTest',function(request,response){
+	if(request.session.auth == null)
 	{
-		response.writeHead(400,{'Content-Type':'text/html'});
+		response.redirect(401,'/login');
+	}
+	else if(!request.body)
+	{
+		response.status =400;
 		response.sendFile(path.join(__dirname+'/../pages/badrequest.html'));
 	}
 	else
@@ -128,7 +133,7 @@ app.use('/insertTest',function(request,response){
 		for(var i=0; i< universities.length; i++){
 			data.associateUserToTest(username,test,date,universities[i],score);
 		}
-		response.redirect('/');
+		response.redirect(200,'/');
 	}
 });
 
