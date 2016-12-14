@@ -1,0 +1,70 @@
+swagger: '2.0'
+info:
+  title: EnterYOUniversity API
+  description: Gather together every entrance exam you've done to have a clear overview of your situation
+  version: "1.0.0"
+host : intense-shore-15317.herokuapp.com
+schemes:
+  - http
+basePath: /
+produces:
+  - text/html
+paths:
+  /:
+    get:
+      summary: Home page of the application
+      description: Shows the data inserted by the user logged in. If noone is authenticated, the page shows the links to login or register into the sistem
+      responses:
+        200:
+          description: The web page
+          schema:
+            $ref: '#/definitions/Page'
+        
+  /insertTest:
+    post:
+      summary: Inserts a test for a user
+      description: Inserts the test sent by a logged user. If the tests are "new", the new names are stored and the test are associated to the user. The user parameter of this API is implicit in the session.
+      parameters:
+        - name: testname
+          in: query
+          description: Name of the test attended by the user
+          required: true
+          type: string
+        - name: date
+          in: query
+          description: Date in which the test was attended
+          required: true
+          type: string
+          format: date
+        - name: universities
+          in: query
+          description: Set of universities/location in which the test is valid (CSV)
+          required: true
+          type: string
+          format: csv
+        - name: score
+          in: query
+          description: The value obtained on the test
+          required: true
+          type: number
+          format: int
+      responses:
+        302:
+          description: Operation succeeded. Redirect to the home page (where there will be the results)
+          schema:
+            $ref: '#/definitions/Page'
+        401:
+          description: user not authenticated
+          schema:
+            $ref: '#/definitions/Page'
+        400:
+          description: "malformed request: body either empty or not in the valid format"
+          schema:
+            $ref: "#/definitions/Page"
+definitions:
+  Page:
+    type: object
+    properties:
+      content:
+        type: string
+        description: A web page

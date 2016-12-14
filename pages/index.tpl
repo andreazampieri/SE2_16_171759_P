@@ -15,8 +15,6 @@
 		<div class="menu-item">
 			<strong>(: username :)</strong>
 		</div>
-		<div class="menu-item">Analytics</div>
-		<div class="menu-item">Settings</div>
 		<div class="menu-item">
 		(:
 			if[auth] ~
