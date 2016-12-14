@@ -133,7 +133,7 @@ app.post('/insertTest',function(request,response){
 		for(var i=0; i< universities.length; i++){
 			data.associateUserToTest(username,test,date,universities[i],score);
 		}
-		response.redirect(200,'/');
+		response.redirect('/');
 	}
 });
 
