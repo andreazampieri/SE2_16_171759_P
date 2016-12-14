@@ -25,35 +25,17 @@
 		:)
 		</div>
 	</div>
-	<!--
-	<table id="tests">
-		<tr class="headers">
-			<td>Test Name</td>
-			<td>Locations</td>
-			<td>Misc. Datas</td>
-		</tr>
+	<table id="tests" style="display: (:if[auth]~[:then ~ block:][:else ~ none:]:)">
 		<tr>
-			<td>CISIA</td>
-			<td>UniTN, UniPD</td>
-			<td>Position UniTN: 87/150<br>
-					Position UniPD: 102/200</td>
-		</tr>
-		<tr>
-			<td>CINECA</td>
-			<td>UniVR</td>
-			<td>Position UniVR: 62/130</td>
-		</tr>
-		<tr>
-			<td>MIUR</td>
-			<td>North Italy, Florence</td>
-			<td>Results available in 18 days</td>
+			<th>Test Name</th>
+			<th>Locations</th>
+			<th>Date</th>
+			<th>Info</th>
 		</tr>
 	</table>
-	-->
 	(:
 			if[auth] ~
 			[:then ~ 
-				<h2>Your tests</h2>
 				<button id="buttontoggle">Insert a new test</button>
 				<form id="insertTest" action="/insertTest" method="post">
 					Name: <input type="text" name="testname" required><br>

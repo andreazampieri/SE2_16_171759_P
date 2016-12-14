@@ -22,7 +22,7 @@ var users = {
  */
 var tests = {
 	name : [],
-	scores : [[[[]]]]	// [username,testname,date,location] = score
+	scores : [] 	// array of tuples of the format [username,testname,date,location,score]
 };
 
 
@@ -33,6 +33,10 @@ var tests = {
  */
 function getNewUserId(){
 	return users.username.length;		//if the users-data is empty -> new id = 0; otherwise the new unused id is the length 
+}
+
+function isInt(x){
+	return !isNaN(parseInt(x));
 }
 
 /**
@@ -218,11 +222,13 @@ function locationIsPresent(location){
  * @return     {boolean}  true if the operation succeeded, false otherwise
  */
 var associateUserToTest = function(username,testname,date,location,score){
-	if(userIsPresent(username) && testIsPresent(testname) && isInt(score) && isAValidDate(date) && locationIsPresent(location)){
-		tests.scores[username][testname][date][location] = parseInt(score);
+	if(userIsPresent(username) && testIsPresent(testname) && isInt(score) && isAValidDate(date))
+	{
+		tests.scores.push([username,testname,date,location,parseInt(score)]);
 		return true;
 	}
-	else{
+	else
+	{
 		return false;
 	}
 }
@@ -238,6 +244,31 @@ function isAValidDate(string){
 	return validPattern.test(string);
 }
 
+var getUserTests = function(username){	
+	if(userIsPresent(username))
+	{
+		var result = [];
+		for(var i=0;i<tests.scores.length;i++)
+		{
+			if(tests.scores[i][0] == username)		// the first element is the username
+			{
+				result.push(tests.scores[i]);
+			}
+		}
+		return result;
+	}
+	else
+	{
+		return [];
+	}
+}
+
+
+var testToJSON = function(test){
+	//[username,testname,date,location,score]
+	return {"username":test[0],"testname":test[1],"date":test[2],"location":test[3],"score":test[4]};
+}
+
 exports.insertUser = insertUser;
 exports.deleteUser = deleteUser;
 exports.updateUser = updateUser;
@@ -245,3 +276,5 @@ exports.getUser = getUser;
 exports.correctAuthentication = correctAuthentication;
 exports.insertTest = insertTest;
 exports.associateUserToTest = associateUserToTest;
+exports.getUserTests = getUserTests;
+exports.testToJSON = testToJSON;
